@@ -17,8 +17,14 @@ security:
         check_path: /api/login_check
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+    api_token_refresh:
+      pattern: ^/api/token/refresh
+      stateless: true
+      refresh_jwt: ~
+
     api:
-      pattern:   ^/api
+      pattern: ^/api
       stateless: true
       jwt: ~
 
@@ -26,16 +32,11 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
 
-      # activate different ways to authenticate
-      # https://symfony.com/doc/current/security.html#the-firewall
-
-      # https://symfony.com/doc/current/security/impersonating_user.html
-      # switch_user: true
-
   access_control:
-    - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/api/login,              roles: PUBLIC_ACCESS }
+    - { path: ^/api/token/refresh,      roles: PUBLIC_ACCESS }
+    - { path: ^/register,               roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/api,                    roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
   security:

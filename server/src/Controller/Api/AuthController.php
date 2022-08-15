@@ -5,10 +5,12 @@ namespace App\Controller\Api;
 
 
 use App\Entity\User;
+use App\Utils\Controller\ApiController;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,8 +46,9 @@ class AuthController extends ApiController
                 empty($email)
             ) {
                 return new JsonResponse([
-                    'success' => false
-                ], 200);
+                    'success' => false,
+                    'message' => 'Empty field'
+                ]);
             }
 
             $user = new User();
@@ -62,7 +65,7 @@ class AuthController extends ApiController
             return new JsonResponse([
                 'success' => true,
                 'id' => $user->getId()
-            ], 200);
+            ], Response::HTTP_OK);
         } catch (\Exception $exception) {
             $error = $exception->getMessage();
             return new JsonResponse([
@@ -78,7 +81,7 @@ class AuthController extends ApiController
      * @return JsonResponse
      */
     #[Route('/api/login_check', name: 'api_login_check', methods: ['POST'])]
-    public function getTokenUser(UserInterface $user, JWTTokenManagerInterface $JWTTokenManager): JsonResponse
+    public function loginCheck(UserInterface $user, JWTTokenManagerInterface $JWTTokenManager): JsonResponse
     {
         return new JsonResponse([
             'token' => $JWTTokenManager->create($user)
